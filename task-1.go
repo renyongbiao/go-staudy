@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // 136. 只出现一次的数字：给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。可以使用 for 循环遍历数组，结合 if 条件判断和 map 数据结构来解决，例如通过 map 记录每个元素出现的次数，然后再遍历 map 找到出现次数为1的元素。
 
@@ -45,7 +48,7 @@ func isPalindrome(x int) bool {
 
 }
 
-//给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效
+// 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效
 func isValidStr(str string) bool {
 
 	arrStr := []byte(str)
@@ -140,6 +143,51 @@ func removeDuplicates(nums []int) int {
 
 }
 
+// 合并重叠区间
+func merge(intervals [][]int) [][]int {
+	if len(intervals) == 0 {
+		return nil
+	}
+	// 1. 按左端点升序排序
+	sort.Slice(intervals, func(i, j int) bool {
+		return intervals[i][0] < intervals[j][0]
+	})
+
+	res := make([][]int, 0, len(intervals))
+	for _, cur := range intervals {
+		curL, curR := cur[0], cur[1]
+		// 2. 若不重叠，直接加入
+		if len(res) == 0 || curL > res[len(res)-1][1] {
+			res = append(res, []int{curL, curR})
+		} else {
+			// 3. 重叠，合并右端点
+			last := res[len(res)-1]
+			if curR > last[1] {
+				last[1] = curR
+			}
+		}
+	}
+	return res
+}
+
+// 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那两个整数
+func twoSum(nums []int, target int) []int {
+	var index1 int
+	var index2 int
+	for i := 0; i < len(nums); i++ {
+		num3 := target - nums[i]
+		for j := i + 1; j < len(nums); j++ {
+			if nums[j] == num3 {
+				index1 = i
+				index2 = j
+				return []int{index1, index2}
+			}
+		}
+
+	}
+	return nil
+}
+
 func main() {
 	singleNumber([]int{2, 2, 1, 3, 3}) // 出现一次的元素
 	fmt.Println("判断是否回文数：", isPalindrome(1211))
@@ -147,4 +195,6 @@ func main() {
 	fmt.Println("查找字符串最长前缀", findLongestPrefix([]string{"abcdefg", "abcde", "abc"}))
 	fmt.Println("大整数加 1，并返回结果的数字数组。", plusOne([]int{1, 2, 3}))
 	fmt.Println("删除数组中的重复项，并且递增排序；严格递增意味着重复的元素是相邻的；返回新数组的长度", removeDuplicates([]int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5}))
+	fmt.Println("合并重叠区间", merge([][]int{{1, 3}, {2, 6}, {8, 10}, {15, 18}}))
+	fmt.Println("两数之和", twoSum([]int{2, 7, 11, 15}, 13))
 }
